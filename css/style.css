@@ -1,0 +1,54 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #ffffff;
+    color: #000000;
+}
+
+/* Özel Scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+}
+::-webkit-scrollbar-track {
+    background: #f1f1f1; 
+}
+::-webkit-scrollbar-thumb {
+    background: #888; 
+    border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #555; 
+}
+
+.drop-zone {
+    transition: all 0.3s ease;
+    background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='16' ry='16' stroke='%23333' stroke-width='2' stroke-dasharray='12%2c 12' stroke-dashoffset='0' stroke-linecap='square'/%3e%3c/svg%3e");
+}
+
+.drop-zone.active {
+    background-color: #f9fafb;
+    transform: scale(0.99);
+    border-color: #000;
+}
+
+.loader {
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid #000;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    animation: spin 1s linear infinite;
+}
+
+/* macOS stil maskeleme için yardımcı sınıf */
+.macos-squircle {
+    border-radius: 22.37%; /* Apple'ın ikonik squircle formuna en yakın CSS değeri */
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
