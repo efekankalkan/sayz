@@ -116,13 +116,11 @@ body {
     height: 140px;
     display: block;
     color: #000;
-    filter: drop-shadow(0 10px 25px rgba(0, 0, 0, 0.3));
     animation: logo-spin-grow 3s ease-in-out infinite;
 }
 
 .dark .splash-logo {
     color: #ffffff;
-    filter: drop-shadow(0 10px 30px rgba(255, 255, 255, 0.4));
 }
 
 @keyframes logo-spin-grow {

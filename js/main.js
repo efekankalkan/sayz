@@ -1,18 +1,27 @@
-// Hide splash screen on load
+// Hide splash screen on load (only show on first visit)
 (function() {
-    function hideSplash() {
+    function showSplashIfFirstVisit() {
+        const hasVisited = localStorage.getItem('sayz_visited');
         const splash = document.getElementById('splashScreen');
-        if (splash) {
-            setTimeout(() => {
-                splash.classList.add('hidden');
-            }, 1500);
+        
+        if (hasVisited) {
+            // Not first visit - hide splash immediately
+            if (splash) splash.classList.add('hidden');
+        } else {
+            // First visit - show splash and hide after delay
+            localStorage.setItem('sayz_visited', 'true');
+            if (splash) {
+                setTimeout(() => {
+                    splash.classList.add('hidden');
+                }, 1500);
+            }
         }
     }
 
     if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', hideSplash);
+        document.addEventListener('DOMContentLoaded', showSplashIfFirstVisit);
     } else {
-        hideSplash();
+        showSplashIfFirstVisit();
     }
 })();
 
