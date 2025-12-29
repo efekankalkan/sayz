@@ -1,3 +1,21 @@
+// Hide splash screen on load
+(function() {
+    function hideSplash() {
+        const splash = document.getElementById('splashScreen');
+        if (splash) {
+            setTimeout(() => {
+                splash.classList.add('hidden');
+            }, 1500);
+        }
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', hideSplash);
+    } else {
+        hideSplash();
+    }
+})();
+
 // --- Yapılandırma ---
 // Twitch Badge boyutları (18x18, 36x36, 72x72)
 const twitchBadgePresets = [
