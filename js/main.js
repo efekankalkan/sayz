@@ -1,4 +1,4 @@
-// Hide splash screen on load
+// Hide splash screen on load & animate logo with WAAPI morphing
 (function() {
     function hideSplash() {
         const splash = document.getElementById('splashScreen');
@@ -9,9 +9,40 @@
         }
     }
 
+    function animateLogo() {
+        const polygon = document.querySelector('.splash-logo polygon');
+        if (!polygon) return;
+
+        const originalPoints = "43.94 116.59 109.13 51.4 121.48 63.74 138.56 0 74.82 17.08 87.16 29.43 0 116.59 65.9 182.5 131.81 116.59 153.78 138.56 88.58 203.76 76.23 191.41 59.15 255.15 122.89 238.07 110.55 225.73 197.71 138.56 131.81 72.66 65.9 138.56 43.94 116.59";
+        
+        const morphPoints = [
+            "50 120 110 50 120 65 135 5 75 20 85 30 5 120 70 180 130 120 155 135 85 205 75 190 55 260 120 240 110 230 200 140 130 70 70 140 50 120",
+            "40 110 105 55 125 60 140 10 70 15 90 35 0 110 60 175 135 125 160 140 90 200 70 185 60 250 125 235 105 225 195 135 130 65 65 135 40 110",
+            originalPoints
+        ];
+
+        const keyframes = morphPoints.map((points, idx) => ({
+            points: points,
+            offset: idx / (morphPoints.length - 1)
+        }));
+
+        const animation = polygon.animate(
+            keyframes,
+            {
+                duration: 3000,
+                iterations: Infinity,
+                easing: 'cubic-bezier(0.4, 0, 0.6, 1)'
+            }
+        );
+    }
+
     if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', hideSplash);
+        document.addEventListener('DOMContentLoaded', () => {
+            animateLogo();
+            hideSplash();
+        });
     } else {
+        animateLogo();
         hideSplash();
     }
 })();

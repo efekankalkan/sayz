@@ -95,11 +95,14 @@ body {
 
 /* Splash Screen Styles */
 .splash-screen {
-    background: linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(240,240,240,0.9) 100%);
-    backdrop-filter: blur(8px);
+    background: rgba(255, 255, 255, 0.5);
     opacity: 1;
-    transition: opacity 0.6s ease-out, visibility 0.6s ease-out;
+    transition: opacity 0.8s ease-out, visibility 0.8s ease-out;
     visibility: visible;
+}
+
+.dark .splash-screen {
+    background: rgba(32, 33, 36, 0.5);
 }
 
 .splash-screen.hidden {
@@ -108,44 +111,60 @@ body {
     pointer-events: none;
 }
 
-.dark .splash-screen {
-    background: linear-gradient(135deg, rgba(32,33,36,0.95) 0%, rgba(48,49,52,0.95) 100%);
-}
-
 .splash-content {
     text-align: center;
 }
 
+.glass-card {
+    background: rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 20px;
+    padding: 40px;
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.17);
+}
+
+.dark .glass-card {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+}
+
 .splash-logo {
-    width: 120px;
-    height: 120px;
+    width: 140px;
+    height: 140px;
     display: block;
     margin: 0 auto;
     color: #000;
-    animation: splash-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    filter: drop-shadow(0 0 20px rgba(0, 0, 0, 0.2));
+    animation: logo-glow 2s ease-in-out infinite;
 }
 
 .dark .splash-logo {
     color: #ffffff;
+    filter: drop-shadow(0 0 25px rgba(255, 255, 255, 0.3));
 }
 
-@keyframes splash-pulse {
+@keyframes logo-glow {
     0%, 100% {
-        transform: scale(1);
-        opacity: 1;
+        filter: drop-shadow(0 0 15px rgba(0, 0, 0, 0.1));
     }
     50% {
-        transform: scale(1.1);
-        opacity: 0.85;
+        filter: drop-shadow(0 0 30px rgba(0, 0, 0, 0.25));
     }
 }
 
-@keyframes splash-fade-in {
-    from {
-        opacity: 0;
+.dark .splash-logo {
+    animation: logo-glow-dark 2s ease-in-out infinite;
+}
+
+@keyframes logo-glow-dark {
+    0%, 100% {
+        filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.2));
     }
-    to {
-        opacity: 1;
+    50% {
+        filter: drop-shadow(0 0 40px rgba(255, 255, 255, 0.4));
     }
 }
 
