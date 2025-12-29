@@ -33,7 +33,7 @@
     const translations = {
         tr: {
             rights: 'Tüm hakları saklıdır.',
-            'Yayıncılar İçin': 'Yayıncılar İçin',
+            'Streamer İçin': 'Streamer İçin',
             'Ana Sayfa': 'Ana Sayfa',
             'Görsellerinizi Platformlara Hazırlayın': 'Görsellerinizi Platformlara Hazırlayın',
             'iOS, Android, macOS ve Sosyal Medya için tek tıkla otomatik boyutlandırma.': 'iOS, Android, macOS ve Sosyal Medya için tek tıkla otomatik boyutlandırma.',
@@ -43,13 +43,13 @@
             'Hazırlanıyor...': 'Hazırlanıyor...',
             'Tümü': 'Tümü',
             'Twitch Rozet ve Emote Oluşturun': 'Twitch Rozet ve Emote Oluşturun',
-            'Twitch yayıncıları için rozet ve emote\'larınızı tek tıkla oluşturun ve topluca indirin.': 'Twitch yayıncıları için rozet ve emote\'larınızı tek tıkla oluşturun ve topluca indirin.',
+            'Twitch streamerları için rozet ve emote\'larınızı tek tıkla oluşturun ve topluca indirin.': 'Twitch streamerları için rozet ve emote\'larınızı tek tıkla oluşturun ve topluca indirin.',
             'Twitch Rozet': 'Twitch Rozet',
             'Emote Rozet': 'Emote Rozet'
         },
         en: {
             rights: 'All rights reserved.',
-            'Yayıncılar İçin': 'For Streamers',
+            'Streamer İçin': 'For Streamers',
             'Ana Sayfa': 'Home',
             'Görsellerinizi Platformlara Hazırlayın': 'Prepare Your Images for Platforms',
             'iOS, Android, macOS ve Sosyal Medya için tek tıkla otomatik boyutlandırma.': 'One-click automatic resizing for iOS, Android, macOS and Social Media.',
@@ -59,7 +59,7 @@
             'Hazırlanıyor...': 'Preparing...',
             'Tümü': 'All',
             'Twitch Rozet ve Emote Oluşturun': 'Create Twitch Badges and Emotes',
-            'Twitch yayıncıları için rozet ve emote\'larınızı tek tıkla oluşturun ve topluca indirin.': 'Create and download your badges and emotes for Twitch streamers with one click.',
+            'Twitch streamerları için rozet ve emote\'larınızı tek tıkla oluşturun ve topluca indirin.': 'Create and download your badges and emotes for Twitch streamers with one click.',
             'Twitch Rozet': 'Twitch Badge',
             'Emote Rozet': 'Emote Badge'
         }

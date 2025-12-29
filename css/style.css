@@ -71,4 +71,26 @@ body {
     color: #e8eaed;
 }
 
+/* Navbar link styles */
+.nav-link {
+    background-color: transparent;
+    color: inherit;
+}
+.nav-link:hover {
+    background-color: rgba(0,0,0,0.04);
+}
+.nav-link.active {
+    background-color: #000 !important;
+    color: #fff !important;
+}
+.dark .nav-link.active {
+    background-color: #000 !important;
+    color: #fff !important;
+}
+
+/* Ensure centered desktop menu keeps spacing on small screens */
+@media (max-width: 768px) {
+    #desktopNav { display: none !important; }
+}
+
 
