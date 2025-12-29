@@ -18,6 +18,10 @@ exports.handler = async function(event) {
     'Content-Type': 'application/json'
   };
 
+  // Optional simple auth: if you set NETLIFY_COUNTER_SECRET in Netlify env vars,
+  // require the same value in `x-counter-secret` header for POST requests.
+  const COUNTER_SECRET = process.env.NETLIFY_COUNTER_SECRET || null;
+
   try {
     if (event.httpMethod === 'GET') {
       const res = await fetch(UPSTASH_URL, {
@@ -35,6 +39,18 @@ exports.handler = async function(event) {
     }
 
     if (event.httpMethod === 'POST') {
+      // If a secret is configured, validate it
+      if (COUNTER_SECRET) {
+        const provided = (event.headers && (event.headers['x-counter-secret'] || event.headers['X-Counter-Secret'])) || null;
+        if (provided !== COUNTER_SECRET) {
+          return {
+            statusCode: 401,
+            body: JSON.stringify({ error: 'Unauthorized' }),
+            headers: { 'Content-Type': 'application/json' }
+          };
+        }
+      }
+
       // increment
       const res = await fetch(UPSTASH_URL, {
         method: 'POST',
