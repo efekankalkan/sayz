@@ -155,7 +155,7 @@ function handleFiles(e) {
         }
         reader.readAsDataURL(file);
     } else {
-        alert('Lütfen geçerli bir görsel dosyası (JPG, PNG, WEBP) yükleyin.');
+        showNotification('Lütfen geçerli bir görsel dosyası (JPG, PNG, WEBP) yükleyin.', 'warning');
     }
 }
 
@@ -168,6 +168,61 @@ function showPreview() {
         outputSection.classList.remove('opacity-0');
         outputSection.classList.add('opacity-100');
     }, 300);
+}
+
+// Bildirim Gösterme Fonksiyonu
+function showNotification(message, type = 'info') {
+    const container = document.getElementById('notification-container');
+    if (!container) return;
+
+    const notif = document.createElement('div');
+    
+    const icons = {
+        info: 'fa-circle-info',
+        success: 'fa-check-circle',
+        warning: 'fa-triangle-exclamation',
+        error: 'fa-circle-xmark'
+    };
+    const icon = icons[type] || 'fa-circle-info';
+
+    const colors = {
+        info: 'text-blue-500',
+        success: 'text-green-500',
+        warning: 'text-yellow-500',
+        error: 'text-red-500'
+    };
+    const colorClass = colors[type] || 'text-blue-500';
+
+    notif.className = `p-4 rounded-lg shadow-lg flex items-start gap-4 bg-white dark:bg-[#3c4043] border border-gray-200 dark:border-gray-700 transition-all duration-300 translate-x-full opacity-0`;
+    notif.innerHTML = `
+        <div class="w-6 text-center">
+             <i class="fa-solid ${icon} ${colorClass} text-xl"></i>
+        </div>
+        <div>
+            <p class="font-medium text-gray-800 dark:text-white text-sm">${message}</p>
+        </div>
+        <button class="ml-auto close-notif text-gray-400 hover:text-gray-800 dark:hover:text-white">&times;</button>
+    `;
+
+    container.appendChild(notif);
+
+    // Fade in
+    setTimeout(() => {
+        notif.classList.remove('translate-x-full', 'opacity-0');
+    }, 10);
+
+    // Auto-dismiss
+    const timeoutId = setTimeout(() => {
+        notif.classList.add('opacity-0');
+        notif.addEventListener('transitionend', () => notif.remove());
+    }, 5000);
+
+    // Manual close
+    notif.querySelector('.close-notif').addEventListener('click', () => {
+        clearTimeout(timeoutId);
+        notif.classList.add('opacity-0');
+        notif.addEventListener('transitionend', () => notif.remove());
+    });
 }
 
 function resetApp() {
@@ -367,7 +422,7 @@ async function downloadSingle(preset, format) {
     if (!originalImgObject) return;
     
     if (format === 'psd') {
-        alert('PSD formatı henüz desteklenmemektedir. Bu özellik yakında eklenecektir.');
+        showNotification('PSD formatı henüz desteklenmemektedir. Bu özellik üzerinde çalışıyoruz.', 'info');
         return;
     }
 
@@ -383,7 +438,7 @@ async function downloadAll(format = 'png') {
     if (!originalImgObject) return;
 
     if (format === 'psd') {
-        alert('Toplu PSD indirme henüz desteklenmemektedir. Lütfen her bir görseli tek tek indirmeyi deneyin veya farklı bir format seçin.');
+        showNotification('Toplu PSD indirme henüz desteklenmemektedir. Lütfen tekil indirme seçeneklerini kullanın.', 'info');
         return;
     }
 
@@ -427,7 +482,7 @@ async function downloadAll(format = 'png') {
         }
 
     } catch (err) {
-        alert(`Zip oluşturulurken bir hata oluştu: ${err}`);
+        showNotification(`Zip oluşturulurken bir hata oluştu: ${err.message}`, 'error');
     } finally {
         // Reset state
         setTimeout(() => {
