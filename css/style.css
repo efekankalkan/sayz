@@ -117,7 +117,7 @@ body {
     display: block;
     color: #000;
     filter: drop-shadow(0 0 20px rgba(0, 0, 0, 0.2));
-    animation: logo-glow 2s ease-in-out infinite;
+    animation: logo-spin-grow 3s ease-in-out infinite;
 }
 
 .dark .splash-logo {
@@ -125,25 +125,37 @@ body {
     filter: drop-shadow(0 0 25px rgba(255, 255, 255, 0.3));
 }
 
-@keyframes logo-glow {
-    0%, 100% {
+@keyframes logo-spin-grow {
+    0% {
+        transform: rotate(0deg) scale(1);
         filter: drop-shadow(0 0 15px rgba(0, 0, 0, 0.1));
     }
     50% {
-        filter: drop-shadow(0 0 30px rgba(0, 0, 0, 0.25));
+        transform: rotate(180deg) scale(1.15);
+        filter: drop-shadow(0 0 35px rgba(0, 0, 0, 0.3));
+    }
+    100% {
+        transform: rotate(360deg) scale(1);
+        filter: drop-shadow(0 0 15px rgba(0, 0, 0, 0.1));
     }
 }
 
 .dark .splash-logo {
-    animation: logo-glow-dark 2s ease-in-out infinite;
+    animation: logo-spin-grow-dark 3s ease-in-out infinite;
 }
 
-@keyframes logo-glow-dark {
-    0%, 100% {
+@keyframes logo-spin-grow-dark {
+    0% {
+        transform: rotate(0deg) scale(1);
         filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.2));
     }
     50% {
-        filter: drop-shadow(0 0 40px rgba(255, 255, 255, 0.4));
+        transform: rotate(180deg) scale(1.15);
+        filter: drop-shadow(0 0 45px rgba(255, 255, 255, 0.5));
+    }
+    100% {
+        transform: rotate(360deg) scale(1);
+        filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.2));
     }
 }
 

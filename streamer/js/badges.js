@@ -1,4 +1,4 @@
-// Hide splash screen on load & animate logo with WAAPI morphing
+// Hide splash screen on load
 (function() {
     function hideSplash() {
         const splash = document.getElementById('splashScreen');
@@ -9,33 +9,9 @@
         }
     }
 
-    function animateLogo() {
-        const polygon = document.querySelector('.splash-logo polygon');
-        if (!polygon) return;
-
-        // Define morph keyframes with smoother transitions
-        const keyframes = [
-            { points: "43.94 116.59 109.13 51.4 121.48 63.74 138.56 0 74.82 17.08 87.16 29.43 0 116.59 65.9 182.5 131.81 116.59 153.78 138.56 88.58 203.76 76.23 191.41 59.15 255.15 122.89 238.07 110.55 225.73 197.71 138.56 131.81 72.66 65.9 138.56 43.94 116.59", offset: 0 },
-            { points: "50 110 115 45 125 68 140 5 75 22 88 32 5 115 65 185 135 115 160 145 90 210 70 185 60 250 125 240 105 220 200 140 135 70 70 140 50 110", offset: 0.25 },
-            { points: "45 105 110 60 120 70 135 10 70 15 85 40 0 105 60 180 130 105 155 150 85 200 75 180 55 255 120 235 100 215 195 135 130 65 65 135 45 105", offset: 0.5 },
-            { points: "48 115 112 48 123 65 138 2 73 18 87 30 2 118 68 183 133 118 157 140 89 205 72 188 58 250 124 238 108 225 198 138 132 68 68 138 48 115", offset: 0.75 },
-            { points: "43.94 116.59 109.13 51.4 121.48 63.74 138.56 0 74.82 17.08 87.16 29.43 0 116.59 65.9 182.5 131.81 116.59 153.78 138.56 88.58 203.76 76.23 191.41 59.15 255.15 122.89 238.07 110.55 225.73 197.71 138.56 131.81 72.66 65.9 138.56 43.94 116.59", offset: 1 }
-        ];
-
-        polygon.animate(keyframes, {
-            duration: 4000,
-            iterations: Infinity,
-            easing: 'cubic-bezier(0.42, 0, 0.58, 1)'
-        });
-    }
-
     if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', () => {
-            animateLogo();
-            hideSplash();
-        });
+        document.addEventListener('DOMContentLoaded', hideSplash);
     } else {
-        animateLogo();
         hideSplash();
     }
 })();
