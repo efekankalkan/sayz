@@ -218,6 +218,7 @@ function createCard(preset, dataUrl) {
     const div = document.createElement('div');
     div.className = `group relative bg-white dark:bg-[#202124] border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden hover:shadow-lg transition-all duration-300 preset-card flex flex-col`;
     div.setAttribute('data-group', preset.group);
+    div.id = `card-${preset.id}`; // Her karta benzersiz bir ID ver
 
     const imgClass = preset.group === 'macos' 
         ? 'macos-squircle max-w-[85%] max-h-[85%] object-cover' 
@@ -239,13 +240,55 @@ function createCard(preset, dataUrl) {
                 <h3 class="text-sm font-semibold text-gray-900 dark:text-gray-200">${preset.name}</h3>
                 <p class="text-xs text-gray-400 dark:text-gray-500 mt-0.5">${preset.w} x ${preset.h}</p>
             </div>
-            <a href="${dataUrl}" download="${preset.name.replace(/\s+/g, '_')}.png" class="text-gray-400 hover:text-black dark:hover:text-white transition-colors" title="İndir">
-                <i class="fa-solid fa-download text-lg"></i>
-            </a>
+            <div class="relative">
+                <button class="single-download-btn text-gray-400 hover:text-black dark:hover:text-white transition-colors" title="İndir">
+                    <i class="fa-solid fa-download text-lg"></i>
+                </button>
+                <div class="single-download-menu hidden absolute bottom-full right-0 mb-2 bg-white dark:bg-[#303134] border border-gray-200 dark:border-gray-600 rounded-lg shadow-lg py-1 min-w-[120px] z-20">
+                    <button class="single-download-option w-full text-left px-3 py-1.5 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-[#3c4043] transition-colors" data-format="png">PNG</button>
+                    <button class="single-download-option w-full text-left px-3 py-1.5 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-[#3c4043] transition-colors" data-format="jpeg">JPEG</button>
+                    <button class="single-download-option w-full text-left px-3 py-1.5 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-[#3c4043] transition-colors" data-format="pdf">PDF</button>
+                </div>
+            </div>
         </div>
     `;
+
+    // Event Listeners for single download dropdown
+    const downloadBtn = div.querySelector('.single-download-btn');
+    const downloadMenu = div.querySelector('.single-download-menu');
+
+    downloadBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        // Close all other menus first
+        document.querySelectorAll('.single-download-menu').forEach(menu => {
+            if (menu !== downloadMenu) {
+                menu.classList.add('hidden');
+            }
+        });
+        downloadMenu.classList.toggle('hidden');
+    });
+
+    div.querySelectorAll('.single-download-option').forEach(option => {
+        option.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const format = option.getAttribute('data-format');
+            downloadMenu.classList.add('hidden');
+            downloadSingle(preset, format);
+        });
+    });
+
     return div;
 }
+
+// Close single download menus when clicking outside
+window.addEventListener('click', (e) => {
+    document.querySelectorAll('.single-download-menu').forEach(menu => {
+        if (!menu.parentElement.contains(e.target)) {
+            menu.classList.add('hidden');
+        }
+    });
+});
+
 
 function filterGrid(filter) {
     const cards = document.querySelectorAll('.preset-card');
@@ -258,9 +301,59 @@ function filterGrid(filter) {
     });
 }
 
+// Tekil İndirme Fonksiyonu
+async function downloadSingle(preset, format) {
+    if (!originalImgObject) return;
+    
+    const { jsPDF } = window.jspdf;
+    const canvas = document.createElement('canvas');
+    canvas.width = preset.w;
+    canvas.height = preset.h;
+    const ctx = canvas.getContext('2d');
+
+    const scale = Math.max(canvas.width / originalImgObject.width, canvas.height / originalImgObject.height);
+    const x = (canvas.width / 2) - (originalImgObject.width / 2) * scale;
+    const y = (canvas.height / 2) - (originalImgObject.height / 2) * scale;
+    
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = 'high';
+
+    if (format === 'jpeg' || format === 'pdf') {
+        ctx.fillStyle = '#FFFFFF';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+    }
+    
+    ctx.drawImage(originalImgObject, x, y, originalImgObject.width * scale, originalImgObject.height * scale);
+
+    const fileName = `${preset.name.replace(/\s+/g, '_')}_${preset.w}x${preset.h}`;
+
+    if (format === 'pdf') {
+        const orientation = preset.w > preset.h ? 'l' : 'p';
+        const doc = new jsPDF({
+            orientation: orientation,
+            unit: 'px',
+            format: [preset.w, preset.h]
+        });
+        doc.addImage(canvas.toDataURL('image/jpeg', 0.95), 'JPEG', 0, 0, preset.w, preset.h);
+        doc.save(`${fileName}.pdf`);
+    } else {
+        const mimeType = `image/${format}`;
+        const fileExtension = format === 'jpeg' ? 'jpg' : format;
+        canvas.toBlob(blob => {
+            saveAs(blob, `${fileName}.${fileExtension}`);
+        }, mimeType, 0.95);
+    }
+}
+
+
 // Yeni Genel İndirme Fonksiyonu
 async function downloadAll(format = 'png') {
     if (!originalImgObject) return;
+
+    if (format === 'psd') {
+        alert('PSD formatı henüz desteklenmemektedir.');
+        return;
+    }
 
     const btn = downloadDropdownBtn;
     const txt = document.getElementById('downloadText');
@@ -274,8 +367,7 @@ async function downloadAll(format = 'png') {
     btn.disabled = true;
 
     const zip = new JSZip();
-    const mimeType = `image/${format}`;
-    const fileExtension = format === 'jpeg' ? 'jpg' : format;
+    const { jsPDF } = window.jspdf;
 
     // Klasör yapısı oluştur
     const folders = {
@@ -298,21 +390,34 @@ async function downloadAll(format = 'png') {
 
             ctx.imageSmoothingEnabled = true;
             ctx.imageSmoothingQuality = 'high';
-
-            // JPEG için arka planı doldur
-            if (format === 'jpeg') {
-                ctx.fillStyle = '#FFFFFF';
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-            }
+            
+            ctx.fillStyle = '#FFFFFF';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
             
             ctx.drawImage(originalImgObject, x, y, originalImgObject.width * scale, originalImgObject.height * scale);
 
-            canvas.toBlob(blob => {
-                const fileName = `${preset.name.replace(/\s+/g, '_')}_${preset.w}x${preset.h}.${fileExtension}`;
-                const folder = folders[preset.group] || folders.social;
-                folder.file(fileName, blob);
+            const fileName = `${preset.name.replace(/\s+/g, '_')}_${preset.w}x${preset.h}`;
+            const folder = folders[preset.group] || folders.social;
+
+            if (format === 'pdf') {
+                const orientation = preset.w > preset.h ? 'l' : 'p';
+                const doc = new jsPDF({
+                    orientation: orientation,
+                    unit: 'px',
+                    format: [preset.w, preset.h]
+                });
+                doc.addImage(canvas.toDataURL('image/jpeg', 0.95), 'JPEG', 0, 0, preset.w, preset.h);
+                const pdfBlob = doc.output('blob');
+                folder.file(`${fileName}.pdf`, pdfBlob);
                 resolve();
-            }, mimeType, 0.95); // Kalite ayarı (JPEG için)
+            } else {
+                const mimeType = `image/${format}`;
+                const fileExtension = format === 'jpeg' ? 'jpg' : format;
+                canvas.toBlob(blob => {
+                    folder.file(`${fileName}.${fileExtension}`, blob);
+                    resolve();
+                }, mimeType, 0.95);
+            }
         });
     });
 
