@@ -19,11 +19,20 @@ const presets = [
     { id: 'android_tablet', name: 'Tablet 10"', group: 'android', w: 1920, h: 1200, icon: 'fa-tablet-android' },
 
     // Social Media
+    { id: 'social_behance_cover', name: 'Behance Cover', group: 'social', w: 3200, h: 410, icon: 'fa-behance' },
+    { id: 'social_discord_banner', name: 'Discord Banner', group: 'social', w: 960, h: 540, icon: 'fa-discord' },
+    { id: 'social_facebook_cover', name: 'Facebook Cover', group: 'social', w: 820, h: 360, icon: 'fa-facebook' },
+    { id: 'generic_16_9', name: 'Genel 16:9', group: 'social', w: 1920, h: 1080, icon: 'fa-display' },
     { id: 'social_insta_sq', name: 'Instagram Kare', group: 'social', w: 1080, h: 1080, icon: 'fa-instagram' },
     { id: 'social_insta_story', name: 'Instagram Story', group: 'social', w: 1080, h: 1920, icon: 'fa-instagram' },
-    { id: 'social_yt_thumb', name: 'YouTube Thumbnail', group: 'social', w: 1280, h: 720, icon: 'fa-youtube' }, 
-    { id: 'social_twitter_header', name: 'Twitter Header', group: 'social', w: 1500, h: 500, icon: 'fa-twitter' },
-    { id: 'generic_16_9', name: 'Genel 16:9', group: 'social', w: 1920, h: 1080, icon: 'fa-display' }
+    { id: 'social_linkedin_banner', name: 'LinkedIn Banner', group: 'social', w: 1584, h: 396, icon: 'fa-linkedin' },
+    { id: 'social_pinterest_cover', name: 'Pinterest Cover', group: 'social', w: 1920, h: 1080, icon: 'fa-pinterest' },
+    { id: 'social_reddit_banner', name: 'Reddit Banner', group: 'social', w: 1920, h: 384, icon: 'fa-reddit-alien' },
+    { id: 'social_soundcloud_header', name: 'SoundCloud Header', group: 'social', w: 2480, h: 520, icon: 'fa-soundcloud' },
+    { id: 'social_twitch_banner', name: 'Twitch Banner', group: 'social', w: 1200, h: 480, icon: 'fa-twitch' },
+    { id: 'social_x_header', name: 'X (Twitter) Header', group: 'social', w: 1500, h: 500, icon: 'fa-x-twitter' },
+    { id: 'social_yt_art', name: 'YouTube Channel Art', group: 'social', w: 2560, h: 1440, icon: 'fa-youtube' },
+    { id: 'social_yt_thumb', name: 'YouTube Thumbnail', group: 'social', w: 1280, h: 720, icon: 'fa-youtube' }
 ];
 
 // --- DOM Elemanları ---
