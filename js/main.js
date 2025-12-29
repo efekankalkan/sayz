@@ -37,6 +37,8 @@ const outputSection = document.getElementById('outputSection');
 const gridContainer = document.getElementById('gridContainer');
 const filterButtons = document.querySelectorAll('.filter-btn');
 const downloadAllBtn = document.getElementById('downloadAllBtn');
+const mobileMenuButton = document.getElementById('mobileMenuButton');
+const mobileMenu = document.getElementById('mobileMenu');
 
 let originalImgObject = null;
 let generatedBlobs = {}; // İndirme için blob'ları saklayacağız
@@ -98,6 +100,11 @@ filterButtons.forEach(btn => {
 
 // ZIP İndir
 downloadAllBtn.addEventListener('click', downloadZip);
+
+// Mobil Menü Toggle
+mobileMenuButton.addEventListener('click', () => {
+    mobileMenu.classList.toggle('hidden');
+});
 
 // --- Fonksiyonlar ---
 
@@ -289,5 +296,3 @@ async function downloadZip() {
         }, 1000);
     }
 }
-
-
