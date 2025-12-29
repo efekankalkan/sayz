@@ -1,10 +1,10 @@
 {
-  "name": "Web Sitem",
-  "short_name": "Sitem",
+  "name": "Sayz",
+  "short_name": "Sayz",
   "start_url": "/index.html",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#ffffff",
+  "background_color": "#efefef",
+  "theme_color": "#efefef",
   "icons": [
     {
       "src": "/assets/img/favicon.png",
