@@ -33,7 +33,7 @@
     const translations = {
         tr: {
             rights: 'Tüm hakları saklıdır.',
-            'Streamer İçin': 'Streamer İçin',
+            'Yayıncılar İçin': 'Yayıncılar İçin',
             'Ana Sayfa': 'Ana Sayfa',
             'Görsellerinizi Platformlara Hazırlayın': 'Görsellerinizi Platformlara Hazırlayın',
             'iOS, Android, macOS ve Sosyal Medya için tek tıkla otomatik boyutlandırma.': 'iOS, Android, macOS ve Sosyal Medya için tek tıkla otomatik boyutlandırma.',
@@ -42,14 +42,14 @@
             'Hepsini İndir (ZIP)': 'Hepsini İndir (ZIP)',
             'Hazırlanıyor...': 'Hazırlanıyor...',
             'Tümü': 'Tümü',
-            'Twitch Rozet ve Emote Oluşturun': 'Twitch Rozet ve Emote Oluşturun',
-            'Twitch streamerları için rozet ve emote\'larınızı tek tıkla oluşturun ve topluca indirin.': 'Twitch streamerları için rozet ve emote\'larınızı tek tıkla oluşturun ve topluca indirin.',
-            'Twitch Rozet': 'Twitch Rozet',
-            'Emote Rozet': 'Emote Rozet'
+            'Rozet ve Emote Oluşturun': 'Rozet ve Emote Oluşturun',
+            'Yayıncılar için rozet ve emote\'larınızı tek tıkla oluşturun ve topluca indirin.': 'Yayıncılar için rozet ve emote\'larınızı tek tıkla oluşturun ve topluca indirin.',
+            'Abone Rozet': 'Abone Rozet',
+            'Emote': 'Emote'
         },
         en: {
             rights: 'All rights reserved.',
-            'Streamer İçin': 'For Streamers',
+            'Yayıncılar İçin': 'For Streamers',
             'Ana Sayfa': 'Home',
             'Görsellerinizi Platformlara Hazırlayın': 'Prepare Your Images for Platforms',
             'iOS, Android, macOS ve Sosyal Medya için tek tıkla otomatik boyutlandırma.': 'One-click automatic resizing for iOS, Android, macOS and Social Media.',
@@ -58,15 +58,15 @@
             'Hepsini İndir (ZIP)': 'Download All (ZIP)',
             'Hazırlanıyor...': 'Preparing...',
             'Tümü': 'All',
-            'Twitch Rozet ve Emote Oluşturun': 'Create Twitch Badges and Emotes',
-            'Twitch streamerları için rozet ve emote\'larınızı tek tıkla oluşturun ve topluca indirin.': 'Create and download your badges and emotes for Twitch streamers with one click.',
-            'Twitch Rozet': 'Twitch Badge',
-            'Emote Rozet': 'Emote Badge'
+            'Rozet ve Emote Oluşturun': 'Create Badges and Emotes',
+            'Yayıncılar için rozet ve emote\'larınızı tek tıkla oluşturun ve topluca indirin.': 'Create and download your badges and emotes for streamers with one click.',
+            'Abone Rozet': 'Subscriber Badge',
+            'Emote': 'Emote'
         }
     };
     
-    // Get current language from localStorage or default to Turkish
-    let currentLang = localStorage.getItem('language') || 'tr';
+    // Get current language from localStorage or default to English
+    let currentLang = localStorage.getItem('language') || 'en';
     
     // Update language display
     function updateLanguageDisplay() {
@@ -88,15 +88,31 @@
             }
         });
         
-        // Translate specific elements by their text content
-        Object.keys(translations[lang]).forEach(key => {
+        // Translate elements that don't use data-i18n by matching current visible text.
+        // Build mapping pairs from the translation table so we can replace either direction.
+        Object.keys(translations.tr).forEach(key => {
+            const trText = translations.tr[key] || key;
+            const enText = (translations.en && translations.en[key]) || trText;
+
+            let sourceText, targetText;
+            if (lang === 'en') {
+                sourceText = trText;
+                targetText = enText;
+            } else {
+                sourceText = enText;
+                targetText = trText;
+            }
+
+            // Find elements that exactly match the sourceText and replace their text
             const elements = Array.from(document.querySelectorAll('*')).filter(el => {
-                return el.textContent.trim() === key && !el.hasAttribute('data-i18n');
+                if (el.hasAttribute('data-i18n') || el.hasAttribute('data-no-translate')) return false;
+                if (el.tagName === 'SCRIPT' || el.tagName === 'STYLE') return false;
+                if (el.childElementCount > 0) return false; // skip containers
+                return el.textContent.trim() === sourceText;
             });
+
             elements.forEach(el => {
-                if (el.tagName !== 'SCRIPT' && el.tagName !== 'STYLE') {
-                    el.textContent = translations[lang][key];
-                }
+                el.textContent = targetText;
             });
         });
     }

@@ -186,14 +186,14 @@ function processPresets() {
         // Çizim
         ctx.drawImage(originalImgObject, x, y, originalImgObject.width * scale, originalImgObject.height * scale);
 
-        // Blob oluştur ve sakla
+        // Blob oluştur ve sakla (PNG)
         canvas.toBlob((blob) => {
             generatedBlobs[preset.id] = blob;
             
-            // Önizleme Kartı Oluştur (DOM)
-            const card = createCard(preset, canvas.toDataURL('image/jpeg', 0.9));
+            // Önizleme Kartı Oluştur (DOM) - PNG data URL
+            const card = createCard(preset, canvas.toDataURL('image/png'));
             gridContainer.appendChild(card);
-        }, 'image/jpeg', 0.9);
+        }, 'image/png');
     });
 }
 
@@ -223,7 +223,7 @@ function createCard(preset, dataUrl) {
                 <h3 class="text-sm font-semibold text-gray-900">${preset.name}</h3>
                 <p class="text-xs text-gray-400 mt-0.5">${preset.w} x ${preset.h}</p>
             </div>
-            <a href="${dataUrl}" download="${preset.name}.jpg" class="text-gray-400 hover:text-black transition-colors" title="İndir">
+            <a href="${dataUrl}" download="${preset.name.replace(/\s+/g, '_')}.png" class="text-gray-400 hover:text-black transition-colors" title="İndir">
                 <i class="fa-solid fa-download text-lg"></i>
             </a>
         </div>
@@ -267,7 +267,7 @@ async function downloadZip() {
     presets.forEach(preset => {
         const blob = generatedBlobs[preset.id];
         if (blob) {
-            const fileName = `${preset.name.replace(/\s+/g, '_')}_${preset.w}x${preset.h}.jpg`;
+            const fileName = `${preset.name.replace(/\s+/g, '_')}_${preset.w}x${preset.h}.png`;
             
             if (preset.group === 'ios') {
                 iosFolder.file(fileName, blob);
@@ -284,6 +284,16 @@ async function downloadZip() {
     try {
         const content = await zip.generateAsync({type:"blob"});
         saveAs(content, "Sayz_Assets.zip");
+        // increment global download counter and notify UI
+        try {
+            const KEY = 'sayz_download_count';
+            const prev = parseInt(localStorage.getItem(KEY) || '0', 10) || 0;
+            const next = prev + 1;
+            localStorage.setItem(KEY, String(next));
+            window.dispatchEvent(new CustomEvent('sayz:download', { detail: { count: next } }));
+        } catch (e) {
+            console.warn('Failed to update download counter', e);
+        }
     } catch (err) {
         alert("Zip oluşturulurken bir hata oluştu: " + err);
     } finally {

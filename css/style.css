@@ -61,6 +61,40 @@ body {
     100% { transform: rotate(360deg); }
 }
 
+/* Footer download counter */
+.download-counter {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    background: rgba(0,0,0,0.04);
+    padding: 0.5rem 0.75rem;
+    border-radius: 9999px;
+    font-weight: 600;
+    color: #111827;
+}
+.dark .download-counter {
+    background: rgba(255,255,255,0.04);
+    color: #e8eaed;
+}
+.download-counter .count {
+    font-variant-numeric: tabular-nums;
+    font-weight: 700;
+    font-size: 0.95rem;
+}
+.download-counter .label {
+    font-size: 0.75rem;
+    color: #6b7280;
+}
+.count-bump {
+    animation: bump 450ms cubic-bezier(.2,.8,.2,1);
+}
+
+@keyframes bump {
+    0% { transform: scale(1); }
+    40% { transform: scale(1.16); }
+    100% { transform: scale(1); }
+}
+
 /* Dark Mode Base Styles - Chrome-like gray tones */
 .dark {
     color-scheme: dark;

@@ -1,16 +1,16 @@
 // --- Yapılandırma ---
-// Twitch Badge boyutları (18x18, 36x36, 72x72)
+// Abone Rozet boyutları (18x18, 36x36, 72x72)
 const twitchBadgePresets = [
-    { id: 'twitch_18', name: 'Twitch Rozet (Küçük)', w: 18, h: 18, icon: 'fa-twitch' },
-    { id: 'twitch_36', name: 'Twitch Rozet (Orta)', w: 36, h: 36, icon: 'fa-twitch' },
-    { id: 'twitch_72', name: 'Twitch Rozet (Büyük)', w: 72, h: 72, icon: 'fa-twitch' }
+    { id: 'twitch_18', name: 'Abone Rozet (Küçük)', name_en: 'Subscriber Badge (Small)', w: 18, h: 18, icon: 'fa-award' },
+    { id: 'twitch_36', name: 'Abone Rozet (Orta)', name_en: 'Subscriber Badge (Medium)', w: 36, h: 36, icon: 'fa-award' },
+    { id: 'twitch_72', name: 'Abone Rozet (Büyük)', name_en: 'Subscriber Badge (Large)', w: 72, h: 72, icon: 'fa-award' }
 ];
 
-// Emote Badge boyutları (28x28, 56x56, 112x112)
+// Emote boyutları (28x28, 56x56, 112x112)
 const emoteBadgePresets = [
-    { id: 'emote_28', name: 'Emote Rozet (Küçük)', w: 28, h: 28, icon: 'fa-face-smile' },
-    { id: 'emote_56', name: 'Emote Rozet (Orta)', w: 56, h: 56, icon: 'fa-face-smile' },
-    { id: 'emote_112', name: 'Emote Rozet (Büyük)', w: 112, h: 112, icon: 'fa-face-smile' }
+    { id: 'emote_28', name: 'Emote (Küçük)', name_en: 'Emote (Small)', w: 28, h: 28, icon: 'fa-face-smile' },
+    { id: 'emote_56', name: 'Emote (Orta)', name_en: 'Emote (Medium)', w: 56, h: 56, icon: 'fa-face-smile' },
+    { id: 'emote_112', name: 'Emote (Büyük)', name_en: 'Emote (Large)', w: 112, h: 112, icon: 'fa-face-smile' }
 ];
 
 // --- DOM Elemanları ---
@@ -202,21 +202,21 @@ function createCard(preset, dataUrl) {
 
     div.innerHTML = `
         <div class="absolute top-3 left-3 z-10">
-            <span class="bg-black/70 backdrop-blur-sm text-white text-[10px] uppercase font-bold px-2 py-1 rounded">
-                <i class="fa-brands ${preset.icon === 'fa-twitch' ? 'fa-twitch' : 'fa-solid fa-face-smile'} mr-1"></i> ${currentBadgeType === 'twitch' ? 'Twitch' : 'Emote'}
+            <span class="bg-black/70 backdrop-blur-sm text-white text-[10px] uppercase font-bold px-2 py-1 rounded" data-no-translate>
+                ${currentBadgeType === 'twitch' ? 'Subscriber Badge' : 'Emote'}
             </span>
         </div>
         
         <div class="relative w-full aspect-square bg-gray-50 flex items-center justify-center overflow-hidden p-4 group-hover:bg-gray-100 transition-colors">
-             <img src="${dataUrl}" class="max-w-full max-h-full object-contain shadow-sm rounded-sm transition-transform duration-500 group-hover:scale-105">
+             <img src="${dataUrl}" class="max-w-full max-h-full object-contain shadow-sm rounded-sm transition-transform duration-500 group-hover:scale-105" data-no-translate>
         </div>
         
         <div class="p-4 flex justify-between items-center border-t border-gray-100">
             <div>
-                <h3 class="text-sm font-semibold text-gray-900">${preset.name}</h3>
-                <p class="text-xs text-gray-400 mt-0.5">${preset.w} x ${preset.h}</p>
+                <h3 class="text-sm font-semibold text-gray-900" data-no-translate>${preset.name_en || preset.name}</h3>
+                <p class="text-xs text-gray-400 mt-0.5" data-no-translate>${preset.w} x ${preset.h}</p>
             </div>
-            <a href="${dataUrl}" download="${preset.name.replace(/\s+/g, '_')}.png" class="text-gray-400 hover:text-black transition-colors" title="İndir">
+            <a href="${dataUrl}" download="${(preset.name_en || preset.name).replace(/\s+/g, '_')}.png" class="text-gray-400 hover:text-black transition-colors" title="Download" data-no-translate>
                 <i class="fa-solid fa-download text-lg"></i>
             </a>
         </div>
@@ -240,8 +240,8 @@ async function downloadZip() {
 
     const zip = new JSZip();
     
-    // Klasör adı
-    const folderName = currentBadgeType === 'twitch' ? 'Twitch_Badges' : 'Emote_Badges';
+    // Klasör adı (genel isimler)
+    const folderName = currentBadgeType === 'twitch' ? 'Subscriber_Badges' : 'Emotes';
     const badgeFolder = zip.folder(folderName);
 
     currentPresets.forEach(preset => {
@@ -254,8 +254,16 @@ async function downloadZip() {
 
     try {
         const content = await zip.generateAsync({type:"blob"});
-        const zipFileName = currentBadgeType === 'twitch' ? 'Twitch_Badges.zip' : 'Emote_Badges.zip';
+        const zipFileName = currentBadgeType === 'twitch' ? 'Subscriber_Badges.zip' : 'Emotes.zip';
         saveAs(content, zipFileName);
+        // increment download counter
+        try {
+            const KEY = 'sayz_download_count';
+            const prev = parseInt(localStorage.getItem(KEY) || '0', 10) || 0;
+            const next = prev + 1;
+            localStorage.setItem(KEY, String(next));
+            window.dispatchEvent(new CustomEvent('sayz:download', { detail: { count: next } }));
+        } catch (e) { console.warn('counter update failed', e); }
     } catch (err) {
         alert("Zip oluşturulurken bir hata oluştu: " + err);
     } finally {

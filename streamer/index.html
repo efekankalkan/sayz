@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Streamer İçin | Sayz</title>
+    <title>Yayıncılar İçin | Sayz</title>
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -32,19 +32,17 @@
         <!-- Başlık -->
         <div class="max-w-4xl mx-auto mb-16">
             <div class="text-center mb-8">
-                <h2 class="text-3xl font-light mb-2 dark:text-white">Twitch Rozet ve Emote Oluşturun</h2>
-                <p class="text-gray-500 dark:text-gray-400">Twitch streamerları için rozet ve emote'larınızı tek tıkla oluşturun ve topluca indirin.</p>
+                <h2 class="text-3xl font-light mb-2 dark:text-white">Rozet ve Emote Oluşturun</h2>
+                <p class="text-gray-500 dark:text-gray-400">Yayıncılar için rozet ve emote'larınızı tek tıkla oluşturun ve topluca indirin.</p>
             </div>
 
             <!-- Badge Tipi Seçimi -->
             <div class="flex gap-4 justify-center mb-8">
-                <button id="twitchBadgeBtn" class="badge-type-btn active px-6 py-3 text-sm font-medium bg-black dark:bg-white text-white dark:text-black rounded-lg transition-colors flex items-center gap-2">
-                    <i class="fa-brands fa-twitch"></i>
-                    Twitch Rozet
+                <button id="twitchBadgeBtn" class="badge-type-btn active px-6 py-3 text-sm font-medium bg-black dark:bg-white text-white dark:text-black rounded-lg transition-colors">
+                    Abone Rozet
                 </button>
-                <button id="emoteBadgeBtn" class="badge-type-btn px-6 py-3 text-sm font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-[#303134] rounded-lg transition-colors flex items-center gap-2">
-                    <i class="fa-solid fa-face-smile"></i>
-                    Emote Rozet
+                <button id="emoteBadgeBtn" class="badge-type-btn px-6 py-3 text-sm font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-[#303134] rounded-lg transition-colors">
+                    Emote
                 </button>
             </div>
 
@@ -94,7 +92,14 @@
         <div class="container mx-auto px-6">
             <div class="flex flex-col md:flex-row justify-between items-center gap-6">
                 <p class="text-sm text-gray-400 dark:text-gray-500">&copy; 2025 Sayz. <span data-i18n="rights">Tüm hakları saklıdır.</span></p>
-                
+
+                <div id="downloadCounterHolder" class="flex items-center justify-center">
+                    <div class="download-counter" aria-hidden="true">
+                        <span id="downloadCounter" class="count">0</span>
+                        <span id="downloadCounterLabel" class="label">Downloads</span>
+                    </div>
+                </div>
+
                 <div class="flex items-center gap-6">
                     <!-- Dark Mode Toggle -->
                     <div class="flex items-center gap-2">
@@ -108,7 +113,7 @@
                     <!-- Language Toggle -->
                     <div class="flex items-center gap-2 border-l border-gray-200 dark:border-gray-700 pl-6 relative">
                         <button id="langToggle" class="text-sm font-medium text-gray-400 dark:text-gray-500 hover:text-black dark:hover:text-white transition-colors flex items-center gap-2">
-                            <span id="currentLang">TR</span>
+                            <span id="currentLang">EN</span>
                             <i class="fa-solid fa-chevron-down text-xs"></i>
                         </button>
                         <div id="langDropdown" class="hidden absolute bottom-full mb-2 bg-white dark:bg-[#303134] border border-gray-200 dark:border-gray-600 rounded-lg shadow-lg py-2 min-w-[100px]">
@@ -126,6 +131,7 @@
     <script src="../js/theme.js"></script>
     
     <!-- Main JavaScript -->
+    <script src="../js/counter.js"></script>
     <script src="js/badges.js"></script>
 </body>
 </html>
