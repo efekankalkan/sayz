@@ -1,7 +1,8 @@
 // Counter UI: reads count from localStorage and animates on page load and increments
 (function(){
     const KEY = 'sayz_download_count';
-    const API_BASE = window.SAYZ_API_BASE || 'http://localhost:3000';
+    // Default to Netlify Functions base; override with window.SAYZ_API_BASE if needed
+    const API_BASE = window.SAYZ_API_BASE || '/.netlify/functions';
 
     function readCount(){
         return parseInt(localStorage.getItem(KEY) || '0', 10) || 0;
@@ -39,7 +40,7 @@
         // Try to fetch global count from API, fallback to localStorage
         (async ()=>{
             try{
-                const res = await fetch(`${API_BASE}/api/count`);
+                const res = await fetch(`${API_BASE}/counter`);
                 if(res.ok){
                     const json = await res.json();
                     const remote = parseInt(json.count || 0, 10) || 0;
@@ -79,7 +80,7 @@
                 if (href.startsWith('data:') || href.endsWith('.png')){
                     // increment remote counter (best-effort)
                     try{
-                        const res = await fetch(`${API_BASE}/api/increment`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ delta: 1 }) });
+                        const res = await fetch(`${API_BASE}/counter`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ delta: 1 }) });
                         if(res.ok){
                             const json = await res.json();
                             setCount(json.count);
