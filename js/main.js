@@ -284,15 +284,34 @@ async function downloadZip() {
     try {
         const content = await zip.generateAsync({type:"blob"});
         saveAs(content, "Sayz_Assets.zip");
-        // increment global download counter and notify UI
+        // Try incrementing global counter via Netlify Function, fallback to localStorage
         try {
+            const API_BASE = window.SAYZ_API_BASE || '/.netlify/functions';
+            const res = await fetch(`${API_BASE}/counter`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ delta: 1 })
+            });
+            if (res.ok) {
+                const json = await res.json();
+                const KEY = 'sayz_download_count';
+                localStorage.setItem(KEY, String(json.count));
+                window.dispatchEvent(new CustomEvent('sayz:download', { detail: { count: json.count } }));
+            } else {
+                // fallback local
+                const KEY = 'sayz_download_count';
+                const prev = parseInt(localStorage.getItem(KEY) || '0', 10) || 0;
+                const next = prev + 1;
+                localStorage.setItem(KEY, String(next));
+                window.dispatchEvent(new CustomEvent('sayz:download', { detail: { count: next } }));
+            }
+        } catch (e) {
+            // network error -> fallback local
             const KEY = 'sayz_download_count';
             const prev = parseInt(localStorage.getItem(KEY) || '0', 10) || 0;
             const next = prev + 1;
             localStorage.setItem(KEY, String(next));
             window.dispatchEvent(new CustomEvent('sayz:download', { detail: { count: next } }));
-        } catch (e) {
-            console.warn('Failed to update download counter', e);
         }
     } catch (err) {
         alert("Zip oluşturulurken bir hata oluştu: " + err);
