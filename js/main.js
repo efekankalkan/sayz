@@ -36,12 +36,16 @@ const removeImageBtn = document.getElementById('removeImageBtn');
 const outputSection = document.getElementById('outputSection');
 const gridContainer = document.getElementById('gridContainer');
 const filterButtons = document.querySelectorAll('.filter-btn');
-const downloadAllBtn = document.getElementById('downloadAllBtn');
 const mobileMenuButton = document.getElementById('mobileMenuButton');
 const mobileMenu = document.getElementById('mobileMenu');
 
+// İndirme Dropdown
+const downloadContainer = document.getElementById('downloadContainer');
+const downloadDropdownBtn = document.getElementById('downloadDropdownBtn');
+const downloadDropdownMenu = document.getElementById('downloadDropdownMenu');
+const downloadOptions = document.querySelectorAll('.download-option');
+
 let originalImgObject = null;
-let generatedBlobs = {}; // İndirme için blob'ları saklayacağız
 
 // --- Event Listeners ---
 
@@ -86,11 +90,11 @@ filterButtons.forEach(btn => {
     btn.addEventListener('click', () => {
         // UI Güncelleme
         filterButtons.forEach(b => {
-            b.classList.remove('bg-black', 'text-white');
-            b.classList.add('text-gray-600', 'hover:bg-gray-100');
+            b.classList.remove('active', 'bg-black', 'dark:bg-white', 'text-white', 'dark:text-black');
+            b.classList.add('text-gray-600', 'dark:text-gray-300', 'hover:bg-gray-100', 'dark:hover:bg-[#303134]');
         });
-        btn.classList.remove('text-gray-600', 'hover:bg-gray-100');
-        btn.classList.add('bg-black', 'text-white');
+        btn.classList.add('active', 'bg-black', 'dark:bg-white', 'text-white', 'dark:text-black');
+        btn.classList.remove('text-gray-600', 'dark:text-gray-300', 'hover:bg-gray-100', 'dark:hover:bg-[#303134]');
 
         // Grid Filtreleme
         const filterValue = btn.getAttribute('data-filter');
@@ -98,8 +102,28 @@ filterButtons.forEach(btn => {
     });
 });
 
-// ZIP İndir
-downloadAllBtn.addEventListener('click', downloadZip);
+// İndirme Dropdown Toggle
+downloadDropdownBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    downloadDropdownMenu.classList.toggle('hidden');
+});
+
+// Dışarı tıklayınca menüyü kapat
+window.addEventListener('click', (e) => {
+    if (!downloadContainer.contains(e.target)) {
+        downloadDropdownMenu.classList.add('hidden');
+    }
+});
+
+// İndirme seçenekleri
+downloadOptions.forEach(option => {
+    option.addEventListener('click', () => {
+        const format = option.getAttribute('data-format');
+        downloadDropdownMenu.classList.add('hidden');
+        downloadAll(format);
+    });
+});
+
 
 // Mobil Menü Toggle
 mobileMenuButton.addEventListener('click', () => {
@@ -149,7 +173,6 @@ function showPreview() {
 function resetApp() {
     fileInput.value = '';
     originalImgObject = null;
-    generatedBlobs = {};
     
     previewContainer.classList.add('hidden');
     dropContent.classList.remove('hidden');
@@ -162,47 +185,40 @@ function resetApp() {
     gridContainer.innerHTML = '';
 }
 
-// Ana İşlem Fonksiyonu: Canvas üzerinde resize ve crop
+// Ana İşlem Fonksiyonu: Canvas üzerinde resize ve crop (sadece önizleme için)
 function processPresets() {
     gridContainer.innerHTML = ''; // Temizle
-    generatedBlobs = {}; // Reset
 
     presets.forEach(preset => {
-        // Canvas oluştur
         const canvas = document.createElement('canvas');
         canvas.width = preset.w;
         canvas.height = preset.h;
         const ctx = canvas.getContext('2d');
 
-        // Smart Crop (Object-fit: Cover mantığı)
         const scale = Math.max(canvas.width / originalImgObject.width, canvas.height / originalImgObject.height);
         const x = (canvas.width / 2) - (originalImgObject.width / 2) * scale;
         const y = (canvas.height / 2) - (originalImgObject.height / 2) * scale;
         
-        // Yüksek kalite çizim ayarları
         ctx.imageSmoothingEnabled = true;
         ctx.imageSmoothingQuality = 'high';
         
-        // Çizim
+        // Arka planı beyaz yap (JPEG için önemli)
+        ctx.fillStyle = '#FFFFFF';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
         ctx.drawImage(originalImgObject, x, y, originalImgObject.width * scale, originalImgObject.height * scale);
 
-        // Blob oluştur ve sakla (PNG)
-        canvas.toBlob((blob) => {
-            generatedBlobs[preset.id] = blob;
-            
-            // Önizleme Kartı Oluştur (DOM) - PNG data URL
-            const card = createCard(preset, canvas.toDataURL('image/png'));
-            gridContainer.appendChild(card);
-        }, 'image/png');
+        // Önizleme Kartı Oluştur (DOM) - PNG data URL
+        const card = createCard(preset, canvas.toDataURL('image/png'));
+        gridContainer.appendChild(card);
     });
 }
 
 function createCard(preset, dataUrl) {
     const div = document.createElement('div');
-    div.className = `group relative bg-white border border-gray-200 rounded-xl overflow-hidden hover:shadow-lg transition-all duration-300 preset-card flex flex-col`;
+    div.className = `group relative bg-white dark:bg-[#202124] border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden hover:shadow-lg transition-all duration-300 preset-card flex flex-col`;
     div.setAttribute('data-group', preset.group);
 
-    // macOS ikonları için özel maskeleme sınıfı ekle
     const imgClass = preset.group === 'macos' 
         ? 'macos-squircle max-w-[85%] max-h-[85%] object-cover' 
         : 'max-w-full max-h-full object-contain shadow-sm rounded-sm';
@@ -214,16 +230,16 @@ function createCard(preset, dataUrl) {
             </span>
         </div>
         
-        <div class="relative w-full aspect-square bg-gray-50 flex items-center justify-center overflow-hidden p-4 group-hover:bg-gray-100 transition-colors">
+        <div class="relative w-full aspect-square bg-gray-50 dark:bg-[#303134] flex items-center justify-center overflow-hidden p-4 group-hover:bg-gray-100 dark:hover:bg-[#3c4043] transition-colors">
              <img src="${dataUrl}" class="${imgClass} transition-transform duration-500 group-hover:scale-105">
         </div>
         
-        <div class="p-4 flex justify-between items-center border-t border-gray-100">
+        <div class="p-4 flex justify-between items-center border-t border-gray-100 dark:border-gray-600">
             <div>
-                <h3 class="text-sm font-semibold text-gray-900">${preset.name}</h3>
-                <p class="text-xs text-gray-400 mt-0.5">${preset.w} x ${preset.h}</p>
+                <h3 class="text-sm font-semibold text-gray-900 dark:text-gray-200">${preset.name}</h3>
+                <p class="text-xs text-gray-400 dark:text-gray-500 mt-0.5">${preset.w} x ${preset.h}</p>
             </div>
-            <a href="${dataUrl}" download="${preset.name.replace(/\s+/g, '_')}.png" class="text-gray-400 hover:text-black transition-colors" title="İndir">
+            <a href="${dataUrl}" download="${preset.name.replace(/\s+/g, '_')}.png" class="text-gray-400 hover:text-black dark:hover:text-white transition-colors" title="İndir">
                 <i class="fa-solid fa-download text-lg"></i>
             </a>
         </div>
@@ -242,13 +258,14 @@ function filterGrid(filter) {
     });
 }
 
-async function downloadZip() {
-    if (Object.keys(generatedBlobs).length === 0) return;
+// Yeni Genel İndirme Fonksiyonu
+async function downloadAll(format = 'png') {
+    if (!originalImgObject) return;
 
-    const btn = document.getElementById('downloadAllBtn');
+    const btn = downloadDropdownBtn;
     const txt = document.getElementById('downloadText');
     const spinner = document.getElementById('downloadSpinner');
-    const icon = btn.querySelector('.fa-file-zipper');
+    const icon = btn.querySelector('.fa-chevron-down');
 
     // Loading state
     txt.innerText = "Hazırlanıyor...";
@@ -257,54 +274,64 @@ async function downloadZip() {
     btn.disabled = true;
 
     const zip = new JSZip();
-    
-    // Klasör yapısı oluştur
-    const iosFolder = zip.folder("iOS");
-    const macosFolder = zip.folder("macOS"); // Yeni klasör
-    const androidFolder = zip.folder("Android");
-    const socialFolder = zip.folder("Social_Media");
+    const mimeType = `image/${format}`;
+    const fileExtension = format === 'jpeg' ? 'jpg' : format;
 
-    presets.forEach(preset => {
-        const blob = generatedBlobs[preset.id];
-        if (blob) {
-            const fileName = `${preset.name.replace(/\s+/g, '_')}_${preset.w}x${preset.h}.png`;
-            
-            if (preset.group === 'ios') {
-                iosFolder.file(fileName, blob);
-            } else if (preset.group === 'macos') {
-                macosFolder.file(fileName, blob);
-            } else if (preset.group === 'android') {
-                androidFolder.file(fileName, blob);
-            } else {
-                socialFolder.file(fileName, blob);
+    // Klasör yapısı oluştur
+    const folders = {
+        ios: zip.folder("iOS"),
+        macos: zip.folder("macOS"),
+        android: zip.folder("Android"),
+        social: zip.folder("Social_Media")
+    };
+
+    const blobPromises = presets.map(preset => {
+        return new Promise(resolve => {
+            const canvas = document.createElement('canvas');
+            canvas.width = preset.w;
+            canvas.height = preset.h;
+            const ctx = canvas.getContext('2d');
+
+            const scale = Math.max(canvas.width / originalImgObject.width, canvas.height / originalImgObject.height);
+            const x = (canvas.width / 2) - (originalImgObject.width / 2) * scale;
+            const y = (canvas.height / 2) - (originalImgObject.height / 2) * scale;
+
+            ctx.imageSmoothingEnabled = true;
+            ctx.imageSmoothingQuality = 'high';
+
+            // JPEG için arka planı doldur
+            if (format === 'jpeg') {
+                ctx.fillStyle = '#FFFFFF';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
             }
-        }
+            
+            ctx.drawImage(originalImgObject, x, y, originalImgObject.width * scale, originalImgObject.height * scale);
+
+            canvas.toBlob(blob => {
+                const fileName = `${preset.name.replace(/\s+/g, '_')}_${preset.w}x${preset.h}.${fileExtension}`;
+                const folder = folders[preset.group] || folders.social;
+                folder.file(fileName, blob);
+                resolve();
+            }, mimeType, 0.95); // Kalite ayarı (JPEG için)
+        });
     });
 
     try {
-        const content = await zip.generateAsync({type:"blob"});
-        saveAs(content, "Sayz_Assets.zip");
-        // Register this download with the global JSON API (no local fallback)
-        try {
-            if (typeof window.incrementGlobalDownload === 'function') {
-                const newCount = await window.incrementGlobalDownload();
-                if (typeof newCount === 'number') {
-                    // successful server-side increment -> UI update is emitted by incrementGlobalDownload
-                } else {
-                    console.warn('Global counter increment failed; server not reachable.');
-                }
-            } else {
-                console.warn('incrementGlobalDownload not available on window.');
-            }
-        } catch (e) {
-            console.warn('Error while incrementing global counter:', e);
+        await Promise.all(blobPromises);
+        const content = await zip.generateAsync({ type: "blob" });
+        saveAs(content, `Sayz_Assets_${format.toUpperCase()}.zip`);
+        
+        // Global sayaç (varsa)
+        if (typeof window.incrementGlobalDownload === 'function') {
+            window.incrementGlobalDownload().catch(e => console.warn('Global counter error:', e));
         }
+
     } catch (err) {
-        alert("Zip oluşturulurken bir hata oluştu: " + err);
+        alert(`Zip oluşturulurken bir hata oluştu: ${err}`);
     } finally {
         // Reset state
         setTimeout(() => {
-            txt.innerText = "Hepsini İndir (ZIP)";
+            txt.innerText = "Hepsini İndir";
             icon.classList.remove('hidden');
             spinner.classList.add('hidden');
             btn.disabled = false;
