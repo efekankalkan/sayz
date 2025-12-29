@@ -24,20 +24,20 @@
 <body class="flex flex-col min-h-screen">
 
     <!-- Navbar -->
-    <nav class="border-b border-gray-200 py-4 sticky top-0 bg-white/90 backdrop-blur-sm z-50">
+    <nav class="border-b border-gray-200 dark:border-gray-700 py-4 sticky top-0 bg-white/90 dark:bg-slate-900/90 backdrop-blur-sm z-50">
         <div class="container mx-auto px-6 flex justify-between items-center">
             <div class="flex items-center gap-3">
                 <svg class="w-6 h-6" viewBox="0 0 197.71 255.15" xmlns="http://www.w3.org/2000/svg">
                     <polygon points="43.94 116.59 109.13 51.4 121.48 63.74 138.56 0 74.82 17.08 87.16 29.43 0 116.59 65.9 182.5 131.81 116.59 153.78 138.56 88.58 203.76 76.23 191.41 59.15 255.15 122.89 238.07 110.55 225.73 197.71 138.56 131.81 72.66 65.9 138.56 43.94 116.59"/>
                 </svg>
-                <h1 class="text-xl font-semibold tracking-tight">Sayz</h1>
+                <h1 class="text-xl font-semibold tracking-tight dark:text-white">Sayz</h1>
             </div>
             <div class="flex items-center gap-6">
-                <a href="yayincilar/" class="text-sm font-medium text-gray-600 hover:text-black transition-colors">
+                <a href="yayincilar/" class="text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white transition-colors">
                     Yayıncılar İçin
                 </a>
-                <a href="#" class="text-sm font-medium hover:text-gray-600 transition-colors">
-                    <i class="fa-brands fa-github text-lg"></i>
+                <a href="https://kick.com/efekankalkan" target="_blank" class="text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white transition-colors">
+                    @efekankalkan
                 </a>
             </div>
         </div>
@@ -49,26 +49,26 @@
         <!-- Yükleme Alanı -->
         <div class="max-w-4xl mx-auto mb-16">
             <div class="text-center mb-8">
-                <h2 class="text-3xl font-light mb-2">Görsellerinizi Platformlara Hazırlayın</h2>
-                <p class="text-gray-500">iOS, Android, macOS ve Sosyal Medya için tek tıkla otomatik boyutlandırma.</p>
+                <h2 class="text-3xl font-light mb-2 dark:text-white">Görsellerinizi Platformlara Hazırlayın</h2>
+                <p class="text-gray-500 dark:text-gray-400">iOS, Android, macOS ve Sosyal Medya için tek tıkla otomatik boyutlandırma.</p>
             </div>
 
-            <div id="dropZone" class="drop-zone w-full h-64 rounded-2xl flex flex-col justify-center items-center cursor-pointer hover:bg-gray-50 relative">
+            <div id="dropZone" class="drop-zone w-full h-64 rounded-2xl flex flex-col justify-center items-center cursor-pointer hover:bg-gray-50 dark:hover:bg-slate-800 relative">
                 <input type="file" id="fileInput" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" accept="image/png, image/jpeg, image/jpg, image/webp">
                 <div class="text-center pointer-events-none transition-all duration-300" id="dropContent">
                     <div class="mb-4">
                         <i class="fa-solid fa-cloud-arrow-up text-4xl text-gray-800"></i>
                     </div>
-                    <p class="text-lg font-medium text-gray-800">Görseli buraya sürükleyin</p>
-                    <p class="text-sm text-gray-400 mt-2">veya seçmek için tıklayın</p>
-                    <p class="text-xs text-gray-300 mt-4">JPG, PNG, WEBP (Maks. 20MB)</p>
+                    <p class="text-lg font-medium text-gray-800 dark:text-gray-200">Görseli buraya sürükleyin</p>
+                    <p class="text-sm text-gray-400 dark:text-gray-500 mt-2">veya seçmek için tıklayın</p>
+                    <p class="text-xs text-gray-300 dark:text-gray-600 mt-4">JPG, PNG, WEBP (Maks. 20MB)</p>
                 </div>
                 
                 <!-- Önizleme -->
-                <div id="previewContainer" class="hidden absolute inset-0 w-full h-full bg-white rounded-2xl flex items-center justify-center p-4">
+                <div id="previewContainer" class="hidden absolute inset-0 w-full h-full bg-white dark:bg-slate-800 rounded-2xl flex items-center justify-center p-4">
                     <img id="sourceImage" class="max-h-full max-w-full object-contain rounded shadow-sm" alt="Source">
-                    <button id="removeImageBtn" class="absolute top-4 right-4 bg-white border border-gray-200 p-2 rounded-full hover:bg-gray-100 shadow-sm transition-all z-10">
-                        <i class="fa-solid fa-xmark"></i>
+                    <button id="removeImageBtn" class="absolute top-4 right-4 bg-white dark:bg-slate-700 border border-gray-200 dark:border-gray-600 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-slate-600 shadow-sm transition-all z-10">
+                        <i class="fa-solid fa-xmark dark:text-white"></i>
                     </button>
                 </div>
             </div>
@@ -78,10 +78,10 @@
         <div id="outputSection" class="hidden transition-opacity duration-500">
             
             <!-- Filtreler ve Aksiyon -->
-            <div class="flex flex-col md:flex-row justify-between items-center mb-8 border-b border-gray-100 pb-4 gap-4">
+            <div class="flex flex-col md:flex-row justify-between items-center mb-8 border-b border-gray-100 dark:border-gray-700 pb-4 gap-4">
                 <div class="flex gap-2 overflow-x-auto pb-2 md:pb-0 w-full md:w-auto" id="filterButtons">
-                    <button class="filter-btn active px-4 py-2 text-sm font-medium bg-black text-white rounded-lg transition-colors" data-filter="all">Tümü</button>
-                    <button class="filter-btn px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded-lg transition-colors" data-filter="ios">
+                    <button class="filter-btn active px-4 py-2 text-sm font-medium bg-black dark:bg-white text-white dark:text-black rounded-lg transition-colors" data-filter="all">Tümü</button>
+                    <button class="filter-btn px-4 py-2 text-sm font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-lg transition-colors" data-filter="ios">
                         <i class="fa-brands fa-apple mr-1"></i> iOS
                     </button>
                     <button class="filter-btn px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded-lg transition-colors" data-filter="macos">
@@ -95,7 +95,7 @@
                     </button>
                 </div>
 
-                <button id="downloadAllBtn" class="bg-black text-white px-6 py-2.5 rounded-lg hover:bg-gray-800 transition-colors flex items-center gap-2 shadow-lg hover:shadow-xl w-full md:w-auto justify-center">
+                <button id="downloadAllBtn" class="bg-black dark:bg-white text-white dark:text-black px-6 py-2.5 rounded-lg hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors flex items-center gap-2 shadow-lg hover:shadow-xl w-full md:w-auto justify-center">
                     <span id="downloadText">Hepsini İndir (ZIP)</span>
                     <i class="fa-solid fa-file-zipper"></i>
                     <div id="downloadSpinner" class="loader hidden border-white border-t-transparent"></div>
@@ -110,17 +110,40 @@
 
     </main>
 
-    <footer class="border-t border-gray-200 py-8 mt-10">
-        <div class="container mx-auto px-6 text-center text-sm text-gray-400 flex flex-col items-center gap-2">
-            <p>&copy; 2025 Sayz. Tüm hakları saklıdır.</p>
-            <div class="flex gap-4 mt-2">
-                <i class="fa-brands fa-instagram hover:text-black cursor-pointer transition-colors"></i>
-                <i class="fa-brands fa-twitter hover:text-black cursor-pointer transition-colors"></i>
-                <i class="fa-brands fa-linkedin hover:text-black cursor-pointer transition-colors"></i>
+    <footer class="border-t border-gray-200 dark:border-gray-700 py-8 mt-10">
+        <div class="container mx-auto px-6">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-6">
+                <p class="text-sm text-gray-400 dark:text-gray-500">&copy; 2025 Sayz. <span data-i18n="rights">Tüm hakları saklıdır.</span></p>
+                
+                <div class="flex items-center gap-6">
+                    <!-- Dark Mode Toggle -->
+                    <div class="flex items-center gap-2">
+                        <i class="fa-solid fa-sun text-gray-400 dark:text-gray-500"></i>
+                        <button id="themeToggle" class="relative w-12 h-6 bg-gray-300 dark:bg-gray-600 rounded-full transition-colors">
+                            <span class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-transform dark:translate-x-6"></span>
+                        </button>
+                        <i class="fa-solid fa-moon text-gray-400 dark:text-gray-500"></i>
+                    </div>
+                    
+                    <!-- Language Toggle -->
+                    <div class="flex items-center gap-2 border-l border-gray-200 dark:border-gray-700 pl-6 relative">
+                        <button id="langToggle" class="text-sm font-medium text-gray-400 dark:text-gray-500 hover:text-black dark:hover:text-white transition-colors flex items-center gap-2">
+                            <span id="currentLang">TR</span>
+                            <i class="fa-solid fa-chevron-down text-xs"></i>
+                        </button>
+                        <div id="langDropdown" class="hidden absolute bottom-full mb-2 right-0 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg py-2 min-w-[100px] z-50">
+                            <button class="lang-option w-full text-left px-4 py-2 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors" data-lang="tr">Türkçe</button>
+                            <button class="lang-option w-full text-left px-4 py-2 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors" data-lang="en">English</button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </footer>
 
+    <!-- Theme and Language Management -->
+    <script src="js/theme.js"></script>
+    
     <!-- Main JavaScript -->
     <script src="js/main.js"></script>
 </body>

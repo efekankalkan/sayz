@@ -52,4 +52,14 @@ body {
     100% { transform: rotate(360deg); }
 }
 
+/* Dark Mode Base Styles */
+.dark {
+    color-scheme: dark;
+}
+
+.dark body {
+    background-color: #0f172a;
+    color: #f1f5f9;
+}
+
 
