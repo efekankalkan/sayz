@@ -26,10 +26,19 @@ body {
     background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='16' ry='16' stroke='%23333' stroke-width='2' stroke-dasharray='12%2c 12' stroke-dashoffset='0' stroke-linecap='square'/%3e%3c/svg%3e");
 }
 
+.dark .drop-zone {
+    background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='16' ry='16' stroke='%235f6368' stroke-width='2' stroke-dasharray='12%2c 12' stroke-dashoffset='0' stroke-linecap='square'/%3e%3c/svg%3e");
+}
+
 .drop-zone.active {
     background-color: #f9fafb;
     transform: scale(0.99);
     border-color: #000;
+}
+
+.dark .drop-zone.active {
+    background-color: #303134;
+    border-color: #5f6368;
 }
 
 .loader {
@@ -52,14 +61,14 @@ body {
     100% { transform: rotate(360deg); }
 }
 
-/* Dark Mode Base Styles */
+/* Dark Mode Base Styles - Chrome-like gray tones */
 .dark {
     color-scheme: dark;
 }
 
 .dark body {
-    background-color: #0f172a;
-    color: #f1f5f9;
+    background-color: #202124;
+    color: #e8eaed;
 }
 
 
