@@ -218,7 +218,7 @@ function createCard(preset, dataUrl) {
     const div = document.createElement('div');
     div.className = `group relative bg-white dark:bg-[#202124] border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden hover:shadow-lg transition-all duration-300 preset-card flex flex-col`;
     div.setAttribute('data-group', preset.group);
-    div.id = `card-${preset.id}`; // Her karta benzersiz bir ID ver
+    div.id = `card-${preset.id}`;
 
     const imgClass = preset.group === 'macos' 
         ? 'macos-squircle max-w-[85%] max-h-[85%] object-cover' 
@@ -244,50 +244,76 @@ function createCard(preset, dataUrl) {
                 <button class="single-download-btn text-gray-400 hover:text-black dark:hover:text-white transition-colors" title="İndir">
                     <i class="fa-solid fa-download text-lg"></i>
                 </button>
-                <div class="single-download-menu hidden absolute bottom-full right-0 mb-2 bg-white dark:bg-[#303134] border border-gray-200 dark:border-gray-600 rounded-lg shadow-lg py-1 min-w-[120px] z-20">
-                    <button class="single-download-option w-full text-left px-3 py-1.5 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-[#3c4043] transition-colors" data-format="png">PNG</button>
-                    <button class="single-download-option w-full text-left px-3 py-1.5 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-[#3c4043] transition-colors" data-format="jpeg">JPEG</button>
-                    <button class="single-download-option w-full text-left px-3 py-1.5 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-[#3c4043] transition-colors" data-format="pdf">PDF</button>
+                <div class="single-download-menu hidden absolute bottom-full right-0 mb-2 bg-white dark:bg-[#303134] border border-gray-200 dark:border-gray-600 rounded-lg shadow-lg py-1 min-w-[160px] z-20">
+                    <!-- Dinamik olarak doldurulacak -->
                 </div>
             </div>
         </div>
     `;
 
-    // Event Listeners for single download dropdown
     const downloadBtn = div.querySelector('.single-download-btn');
     const downloadMenu = div.querySelector('.single-download-menu');
 
     downloadBtn.addEventListener('click', (e) => {
         e.stopPropagation();
-        // Close all other menus first
         document.querySelectorAll('.single-download-menu').forEach(menu => {
             if (menu !== downloadMenu) {
                 menu.classList.add('hidden');
             }
         });
+        updateAndShowMenu(preset, downloadMenu);
         downloadMenu.classList.toggle('hidden');
-    });
-
-    div.querySelectorAll('.single-download-option').forEach(option => {
-        option.addEventListener('click', (e) => {
-            e.stopPropagation();
-            const format = option.getAttribute('data-format');
-            downloadMenu.classList.add('hidden');
-            downloadSingle(preset, format);
-        });
     });
 
     return div;
 }
 
+// Menüyü boyutlarla güncelleyip gösteren fonksiyon
+async function updateAndShowMenu(preset, menu) {
+    menu.innerHTML = `<div class="p-2 text-center text-xs text-gray-400">Hesaplanıyor...</div>`;
+    
+    const formats = ['png', 'jpeg', 'pdf'];
+    const promises = formats.map(format => getPresetBlob(preset, format));
+    const results = await Promise.all(promises);
+
+    menu.innerHTML = ''; // Temizle
+
+    results.forEach((blob, index) => {
+        const format = formats[index];
+        const size = formatBytes(blob.size);
+        const option = document.createElement('button');
+        option.className = "single-download-option w-full text-left px-3 py-1.5 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-[#3c4043] transition-colors flex justify-between";
+        option.dataset.format = format;
+        option.innerHTML = `<span>${format.toUpperCase()}</span> <span class="text-gray-400">${size}</span>`;
+        option.addEventListener('click', (e) => {
+            e.stopPropagation();
+            menu.classList.add('hidden');
+            downloadSingle(preset, format);
+        });
+        menu.appendChild(option);
+    });
+}
+
+
 // Close single download menus when clicking outside
 window.addEventListener('click', (e) => {
     document.querySelectorAll('.single-download-menu').forEach(menu => {
-        if (!menu.parentElement.contains(e.target)) {
+        const btn = menu.previousElementSibling;
+        if (!menu.contains(e.target) && !btn.contains(e.target)) {
             menu.classList.add('hidden');
         }
     });
 });
+
+// Baytları KB veya MB'a çeviren yardımcı fonksiyon
+function formatBytes(bytes, decimals = 2) {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const dm = decimals < 0 ? 0 : decimals;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+}
 
 
 function filterGrid(filter) {
@@ -301,48 +327,54 @@ function filterGrid(filter) {
     });
 }
 
+// Belirtilen formatta blob oluşturan yeniden kullanılabilir fonksiyon
+function getPresetBlob(preset, format) {
+    return new Promise(resolve => {
+        const { jsPDF } = window.jspdf;
+        const canvas = document.createElement('canvas');
+        canvas.width = preset.w;
+        canvas.height = preset.h;
+        const ctx = canvas.getContext('2d');
+
+        const scale = Math.max(canvas.width / originalImgObject.width, canvas.height / originalImgObject.height);
+        const x = (canvas.width / 2) - (originalImgObject.width / 2) * scale;
+        const y = (canvas.height / 2) - (originalImgObject.height / 2) * scale;
+        
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
+
+        if (format === 'jpeg' || format === 'pdf') {
+            ctx.fillStyle = '#FFFFFF';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+        }
+        
+        ctx.drawImage(originalImgObject, x, y, originalImgObject.width * scale, originalImgObject.height * scale);
+
+        if (format === 'pdf') {
+            const orientation = preset.w > preset.h ? 'l' : 'p';
+            const doc = new jsPDF({ orientation, unit: 'px', format: [preset.w, preset.h] });
+            doc.addImage(canvas.toDataURL('image/jpeg', 0.95), 'JPEG', 0, 0, preset.w, preset.h);
+            resolve(doc.output('blob'));
+        } else {
+            const mimeType = `image/${format}`;
+            canvas.toBlob(blob => resolve(blob), mimeType, 0.95);
+        }
+    });
+}
+
 // Tekil İndirme Fonksiyonu
 async function downloadSingle(preset, format) {
     if (!originalImgObject) return;
     
-    const { jsPDF } = window.jspdf;
-    const canvas = document.createElement('canvas');
-    canvas.width = preset.w;
-    canvas.height = preset.h;
-    const ctx = canvas.getContext('2d');
-
-    const scale = Math.max(canvas.width / originalImgObject.width, canvas.height / originalImgObject.height);
-    const x = (canvas.width / 2) - (originalImgObject.width / 2) * scale;
-    const y = (canvas.height / 2) - (originalImgObject.height / 2) * scale;
-    
-    ctx.imageSmoothingEnabled = true;
-    ctx.imageSmoothingQuality = 'high';
-
-    if (format === 'jpeg' || format === 'pdf') {
-        ctx.fillStyle = '#FFFFFF';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
+    if (format === 'psd') {
+        alert('PSD formatı henüz desteklenmemektedir. Bu özellik yakında eklenecektir.');
+        return;
     }
-    
-    ctx.drawImage(originalImgObject, x, y, originalImgObject.width * scale, originalImgObject.height * scale);
 
-    const fileName = `${preset.name.replace(/\s+/g, '_')}_${preset.w}x${preset.h}`;
-
-    if (format === 'pdf') {
-        const orientation = preset.w > preset.h ? 'l' : 'p';
-        const doc = new jsPDF({
-            orientation: orientation,
-            unit: 'px',
-            format: [preset.w, preset.h]
-        });
-        doc.addImage(canvas.toDataURL('image/jpeg', 0.95), 'JPEG', 0, 0, preset.w, preset.h);
-        doc.save(`${fileName}.pdf`);
-    } else {
-        const mimeType = `image/${format}`;
-        const fileExtension = format === 'jpeg' ? 'jpg' : format;
-        canvas.toBlob(blob => {
-            saveAs(blob, `${fileName}.${fileExtension}`);
-        }, mimeType, 0.95);
-    }
+    const blob = await getPresetBlob(preset, format);
+    const fileExtension = format === 'jpeg' ? 'jpg' : format;
+    const fileName = `${preset.name.replace(/\s+/g, '_')}_${preset.w}x${preset.h}.${fileExtension}`;
+    saveAs(blob, fileName);
 }
 
 
@@ -351,7 +383,7 @@ async function downloadAll(format = 'png') {
     if (!originalImgObject) return;
 
     if (format === 'psd') {
-        alert('PSD formatı henüz desteklenmemektedir.');
+        alert('Toplu PSD indirme henüz desteklenmemektedir. Lütfen her bir görseli tek tek indirmeyi deneyin veya farklı bir format seçin.');
         return;
     }
 
@@ -367,7 +399,6 @@ async function downloadAll(format = 'png') {
     btn.disabled = true;
 
     const zip = new JSZip();
-    const { jsPDF } = window.jspdf;
 
     // Klasör yapısı oluştur
     const folders = {
@@ -377,48 +408,12 @@ async function downloadAll(format = 'png') {
         social: zip.folder("Social_Media")
     };
 
-    const blobPromises = presets.map(preset => {
-        return new Promise(resolve => {
-            const canvas = document.createElement('canvas');
-            canvas.width = preset.w;
-            canvas.height = preset.h;
-            const ctx = canvas.getContext('2d');
-
-            const scale = Math.max(canvas.width / originalImgObject.width, canvas.height / originalImgObject.height);
-            const x = (canvas.width / 2) - (originalImgObject.width / 2) * scale;
-            const y = (canvas.height / 2) - (originalImgObject.height / 2) * scale;
-
-            ctx.imageSmoothingEnabled = true;
-            ctx.imageSmoothingQuality = 'high';
-            
-            ctx.fillStyle = '#FFFFFF';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            
-            ctx.drawImage(originalImgObject, x, y, originalImgObject.width * scale, originalImgObject.height * scale);
-
-            const fileName = `${preset.name.replace(/\s+/g, '_')}_${preset.w}x${preset.h}`;
-            const folder = folders[preset.group] || folders.social;
-
-            if (format === 'pdf') {
-                const orientation = preset.w > preset.h ? 'l' : 'p';
-                const doc = new jsPDF({
-                    orientation: orientation,
-                    unit: 'px',
-                    format: [preset.w, preset.h]
-                });
-                doc.addImage(canvas.toDataURL('image/jpeg', 0.95), 'JPEG', 0, 0, preset.w, preset.h);
-                const pdfBlob = doc.output('blob');
-                folder.file(`${fileName}.pdf`, pdfBlob);
-                resolve();
-            } else {
-                const mimeType = `image/${format}`;
-                const fileExtension = format === 'jpeg' ? 'jpg' : format;
-                canvas.toBlob(blob => {
-                    folder.file(`${fileName}.${fileExtension}`, blob);
-                    resolve();
-                }, mimeType, 0.95);
-            }
-        });
+    const blobPromises = presets.map(async (preset) => {
+        const blob = await getPresetBlob(preset, format);
+        const fileExtension = format === 'jpeg' ? 'jpg' : format;
+        const fileName = `${preset.name.replace(/\s+/g, '_')}_${preset.w}x${preset.h}.${fileExtension}`;
+        const folder = folders[preset.group] || folders.social;
+        folder.file(fileName, blob);
     });
 
     try {
