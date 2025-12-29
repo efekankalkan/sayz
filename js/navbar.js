@@ -16,6 +16,10 @@
 
             <div class="hidden md:flex absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 items-center gap-2" id="desktopNav">
                 <a href="${yayHref}" class="nav-link text-sm font-medium px-4 py-2 rounded-lg transition-colors">Streamer İçin</a>
+            </div>
+
+            <div class="hidden md:flex items-center gap-2">
+                <div class="h-5 w-px bg-gray-300 dark:bg-gray-600"></div>
                 <a href="https://kick.com/efekankalkan" target="_blank" class="nav-link text-sm font-medium px-4 py-2 rounded-lg transition-colors">@efekankalkan</a>
             </div>
 
